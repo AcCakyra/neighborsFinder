@@ -1,21 +1,28 @@
 package main.java.com.accakyra.neighborsFinder.network;
 
+import main.java.com.accakyra.neighborsFinder.network.handlers.JokeSocketHandler;
 import main.java.com.accakyra.neighborsFinder.network.handlers.OneMessageSocketHandler;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class PortScanner {
+public class NetworkListener {
 
     private int firstPort;
     private int portAmount;
+    private JokeGenerator jokeGenerator;
+    private List<NetworkNeighbor> neighbors;
 
-    public PortScanner(int firstPort, int portAmount) {
+    public NetworkListener(int firstPort, int portAmount, JokeGenerator jokeGenerator) {
         this.firstPort = firstPort;
         this.portAmount = portAmount;
+        this.jokeGenerator = jokeGenerator;
     }
 
     public void start() {
@@ -24,25 +31,44 @@ public class PortScanner {
         executorService.execute(new PortListener(serverSocket));
     }
 
-    private static class PortListener implements Runnable {
+    public void setNeighbors(List<NetworkNeighbor> neighbors) {
+        this.neighbors = neighbors;
+    }
+
+    private class PortListener implements Runnable {
         private ServerSocket serverSocket;
+        ExecutorService pool;
 
         PortListener(ServerSocket serverSocket) {
             this.serverSocket = serverSocket;
+            pool = Executors.newFixedThreadPool(3);
         }
 
         @Override
         public void run() {
-            ExecutorService pool = Executors.newFixedThreadPool(3);
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
-                    pool.execute(new OneMessageSocketHandler(socket));
+                    if (isNeighbor(socket.getInetAddress().getHostAddress())) {
+                        pool.execute(new JokeSocketHandler(socket, jokeGenerator.getJoke()));
+                    } else {
+                        pool.execute(new OneMessageSocketHandler(socket));
+                    }
                 }
                 catch(IOException e){
                     System.out.println("Smth went while server tries accept connection");
                 }
             }
+        }
+
+        private boolean isNeighbor(String ip) {
+            if (neighbors == null) return false;
+            for (NetworkNeighbor neighbor : neighbors) {
+                if (ip.equals(neighbor.getIp())) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

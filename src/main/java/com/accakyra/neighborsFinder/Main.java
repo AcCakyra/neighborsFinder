@@ -1,9 +1,6 @@
 package main.java.com.accakyra.neighborsFinder;
 
-import main.java.com.accakyra.neighborsFinder.network.JokeGenerator;
-import main.java.com.accakyra.neighborsFinder.network.NetworkCommunicator;
-import main.java.com.accakyra.neighborsFinder.network.NetworkScanner;
-import main.java.com.accakyra.neighborsFinder.network.PortScanner;
+import main.java.com.accakyra.neighborsFinder.network.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,15 +10,16 @@ public class Main {
         int firstPort = 2000;
         int portAmount = 46;
 
-        PortScanner portScanner = new PortScanner(firstPort, portAmount);
+        JokeGenerator jokeGenerator = new JokeGenerator();
+        NetworkListener networkListener = new NetworkListener(firstPort, portAmount, jokeGenerator);
         NetworkScanner networkScanner = new NetworkScanner();
         NetworkCommunicator networkCommunicator = new NetworkCommunicator();
-        JokeGenerator jokeGenerator = new JokeGenerator();
 
-        portScanner.start();
+        networkListener.start();
         List<String> networkIps = networkScanner.getAliveHosts();
-        List<String> neighbors = networkCommunicator.tryCommunicate(networkIps, firstPort, portAmount);
-
+        List<NetworkNeighbor> neighbors = networkCommunicator
+                .tryCommunicate(networkIps, firstPort, portAmount);
         networkCommunicator.sendMessage(neighbors, jokeGenerator);
+        networkListener.setNeighbors(neighbors);
     }
 }
