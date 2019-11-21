@@ -1,13 +1,12 @@
 package com.accakyra.neighborsFinder.network;
 
-import main.java.com.accakyra.neighborsFinder.network.handlers.JokeSocketHandler;
-import main.java.com.accakyra.neighborsFinder.network.handlers.OneMessageSocketHandler;
+import com.accakyra.neighborsFinder.network.handlers.JokeSocketHandler;
+import com.accakyra.neighborsFinder.network.handlers.OneMessageSocketHandler;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +17,7 @@ public class NetworkListener {
     private int portAmount;
     private JokeGenerator jokeGenerator;
     private List<NetworkNeighbor> neighbors;
+    final static Logger logger = Logger.getLogger(NetworkListener.class);
 
     public NetworkListener(int firstPort, int portAmount, JokeGenerator jokeGenerator) {
         this.firstPort = firstPort;
@@ -56,7 +56,7 @@ public class NetworkListener {
                     }
                 }
                 catch(IOException e){
-                    System.out.println("Smth went while server tries accept connection");
+                    logger.error("Smth went while server tries accept connection");
                 }
             }
         }
@@ -77,7 +77,7 @@ public class NetworkListener {
         for (int i = firstPort; i < lastPort; i++) {
             ServerSocket socket = tryStartConnection(i);
             if (socket != null) {
-                System.out.println("Server start listening on " + socket.getLocalPort() + " port");
+                logger.info("Server start listening on " + socket.getLocalPort() + " port");
                 return socket;
             }
         }

@@ -1,11 +1,14 @@
 package com.accakyra.neighborsFinder.network.handlers;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.net.Socket;
 
 public class OneMessageSocketHandler implements Runnable {
 
     private Socket socket;
+    final static Logger logger = Logger.getLogger(OneMessageSocketHandler.class);
 
     public OneMessageSocketHandler(Socket socket) {
         this.socket = socket;
@@ -13,22 +16,22 @@ public class OneMessageSocketHandler implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Got connection from: "
+        logger.info("Got connection from: "
                 + socket.getInetAddress().getHostAddress()
                 + ":" + socket.getPort());
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 
             String message = in.readLine();
-            System.out.println("Message is - " + message);
+            logger.info("Message is - " + message);
             if (message.equals("Do you understand me?")) {
-                System.out.println("Write answer");
+                logger.info("Write answer");
                 out.write("Yes, I do");
                 out.newLine();
             }
 
         } catch (IOException e) {
-            System.out.println("Smth went wrong in communications between server and client");
+            logger.error("Smth went wrong in communications between server and client");
         }
     }
 }

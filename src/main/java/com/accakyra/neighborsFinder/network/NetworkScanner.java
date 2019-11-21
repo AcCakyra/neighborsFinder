@@ -1,5 +1,7 @@
 package com.accakyra.neighborsFinder.network;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
@@ -9,8 +11,10 @@ import java.util.stream.IntStream;
 
 public class NetworkScanner {
 
-    public List<String> getAliveHosts() throws IOException {
-        System.out.println("Start scanning network for list of available ip");
+    final static Logger logger = Logger.getLogger(NetworkScanner.class);
+
+    public List<String> getAliveHosts() {
+        logger.info("Start scanning network for list of available ip");
         List<String> ips = new ArrayList<>();
 
         int timeout = 100;
@@ -25,7 +29,7 @@ public class NetworkScanner {
                 .filter(ip -> checkIp(ip, timeout))
                 .forEach(ips::add);
 
-        System.out.println("Stop scanning");
+        logger.info("Stop scanning");
         return ips;
     }
 
@@ -50,7 +54,7 @@ public class NetworkScanner {
             ipNumbers += delta;
             return convertLongToIp(ipNumbers);
         } catch (UnknownHostException e) {
-            System.out.println("Cannot get ip by first ip and delta");
+            logger.error("Cannot get ip by first ip and delta");
         }
         return null;
     }
@@ -60,7 +64,7 @@ public class NetworkScanner {
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
             return socket.getLocalAddress().getHostAddress();
         } catch (SocketException | UnknownHostException e) {
-            System.out.println("Cannot get my network address");
+            logger.error("Cannot get my network address");
         }
         return null;
     }
@@ -70,7 +74,7 @@ public class NetworkScanner {
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(InetAddress.getByName(subnet));
             return networkInterface.getInterfaceAddresses().get(1).getNetworkPrefixLength();
         } catch (SocketException | UnknownHostException e) {
-            System.out.println("Cannot get subnet mask");
+            logger.error("Cannot get subnet mask");
         }
         return 0;
     }
@@ -78,11 +82,11 @@ public class NetworkScanner {
     private boolean checkIp(String ip, int timeout) {
         try {
             if (InetAddress.getByName(ip).isReachable(timeout)) {
-                System.out.println("Find one ip " + ip);
+                logger.info("Find one ip " + ip);
                 return true;
             }
         } catch (IOException e) {
-            System.out.println("Cannot get ip " + ip + " from string");
+            logger.error("Cannot get ip " + ip + " from string");
         }
         return false;
     }

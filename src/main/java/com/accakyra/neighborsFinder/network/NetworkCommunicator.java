@@ -1,5 +1,7 @@
 package com.accakyra.neighborsFinder.network;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,8 +13,10 @@ import java.util.stream.IntStream;
 
 public class NetworkCommunicator {
 
+    final static Logger logger = Logger.getLogger(NetworkCommunicator.class);
+
     public List<NetworkNeighbor> tryCommunicate(List<String> ips, int firstPort, int portAmount) {
-        System.out.println("Start finding all neighbors");
+        logger.info("Start finding all neighbors");
         List<NetworkNeighbor> neighbors = new ArrayList<>();
 
         ips.stream()
@@ -21,8 +25,8 @@ public class NetworkCommunicator {
                         .filter(port -> isAlive(ip, port))
                         .forEach(port -> neighbors.add(convertNetworkNeighbor(ip, port))));
 
-        System.out.println("Stop finding");
-        System.out.println("Result is - " + Arrays.toString(neighbors.toArray()));
+        logger.info("Stop finding");
+        logger.info("Result is - " + Arrays.toString(neighbors.toArray()));
         return neighbors;
     }
 
@@ -30,7 +34,7 @@ public class NetworkCommunicator {
         neighbors.stream()
                 .parallel()
                 .forEach(neighbor -> {
-                    System.out.println("Send message to " + neighbor);
+                    logger.info("Send message to " + neighbor);
                     sendMessage(neighbor.getIp(), neighbor.getPort(), jokeGenerator.getJoke());
                 });
     }
@@ -44,6 +48,7 @@ public class NetworkCommunicator {
             out.flush();
             String answer = in.readLine();
             if (answer.equals("Yes, I do")) {
+                logger.info("Got message from ip - " + socket.getInetAddress().getHostAddress());
                 return true;
             }
         } catch (IOException e) {
@@ -58,7 +63,7 @@ public class NetworkCommunicator {
             String hostName = addr.getHostName();
             return new NetworkNeighbor(port, ip, hostName);
         } catch (UnknownHostException e) {
-            System.out.println("Incorrect ip address");
+            logger.error("Incorrect ip address");
         }
         return null;
     }
@@ -68,7 +73,7 @@ public class NetworkCommunicator {
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
             out.write(message);
         } catch (IOException e) {
-            System.out.println("Some problems in communication with neighbor");
+            logger.error("Some problems in communication with neighbor");
         }
     }
 }
