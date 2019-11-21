@@ -1,4 +1,4 @@
-package main.java.com.accakyra.neighborsFinder.network;
+package com.accakyra.neighborsFinder.network;
 
 import java.util.ArrayList;
 import java.util.List;

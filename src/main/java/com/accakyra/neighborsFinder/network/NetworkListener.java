@@ -1,4 +1,4 @@
-package main.java.com.accakyra.neighborsFinder.network;
+package com.accakyra.neighborsFinder.network;
 
 import main.java.com.accakyra.neighborsFinder.network.handlers.JokeSocketHandler;
 import main.java.com.accakyra.neighborsFinder.network.handlers.OneMessageSocketHandler;

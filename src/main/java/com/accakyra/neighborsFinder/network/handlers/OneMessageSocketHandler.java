@@ -1,4 +1,4 @@
-package main.java.com.accakyra.neighborsFinder.network.handlers;
+package com.accakyra.neighborsFinder.network.handlers;
 
 import java.io.*;
 import java.net.Socket;

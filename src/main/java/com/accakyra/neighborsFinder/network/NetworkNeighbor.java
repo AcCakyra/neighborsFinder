@@ -1,4 +1,4 @@
-package main.java.com.accakyra.neighborsFinder.network;
+package com.accakyra.neighborsFinder.network;
 
 public class NetworkNeighbor {
 

@@ -1,6 +1,6 @@
-package main.java.com.accakyra.neighborsFinder;
+package com.accakyra.neighborsFinder;
 
-import main.java.com.accakyra.neighborsFinder.network.*;
+import com.accakyra.neighborsFinder.network.*;
 
 import java.io.IOException;
 import java.util.List;
