@@ -17,9 +17,10 @@ public class Main {
 
         networkListener.start();
         List<String> networkIps = networkScanner.getAliveHosts();
-        List<NetworkNeighbor> neighbors = networkCommunicator
-                .tryCommunicate(networkIps, firstPort, portAmount);
-        networkCommunicator.sendMessage(neighbors, jokeGenerator);
+        List<NetworkNeighbor> neighbors = networkCommunicator.tryCommunicate(networkIps, firstPort, portAmount);
+
         networkListener.setNeighbors(neighbors);
+        networkCommunicator.sendMessage(neighbors, jokeGenerator);
+
     }
 }

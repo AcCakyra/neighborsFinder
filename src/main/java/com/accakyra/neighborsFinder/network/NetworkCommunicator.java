@@ -23,7 +23,7 @@ public class NetworkCommunicator {
                 .parallel()
                 .forEach(ip -> IntStream.range(firstPort, firstPort + portAmount + 1)
                         .filter(port -> isAlive(ip, port))
-                        .forEach(port -> neighbors.add(convertNetworkNeighbor(ip, port))));
+                        .forEach(port -> neighbors.add(convertToNetworkNeighbor(ip, port))));
 
         logger.info("Stop finding");
         logger.info("Result is - " + Arrays.toString(neighbors.toArray()));
@@ -57,7 +57,7 @@ public class NetworkCommunicator {
         return false;
     }
 
-    private NetworkNeighbor convertNetworkNeighbor(String ip, int port) {
+    private NetworkNeighbor convertToNetworkNeighbor(String ip, int port) {
         try {
             InetAddress addr = InetAddress.getByName(ip);
             String hostName = addr.getHostName();
